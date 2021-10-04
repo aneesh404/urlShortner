@@ -2,11 +2,9 @@ package hasher
 
 import (
 	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"math/big"
-	"os"
-
-	"github.com/itchyny/base58-go"
 )
 
 func GenerateShortLink(initialLink string, userId string) string {
@@ -15,7 +13,7 @@ func GenerateShortLink(initialLink string, userId string) string {
 
 	generatedNumber := new(big.Int).SetBytes(urlHashBytes).Uint64() //new number generated from hash
 
-	finalString := base58Encoded([]byte(fmt.Sprintf("%d", generatedNumber))) //encode it into base58
+	finalString := base64Encoded([]byte(fmt.Sprintf("%d", generatedNumber))) //encode it into base58
 
 	return finalString[:8] // send first 8 characters of hash
 }
@@ -26,12 +24,7 @@ func sha256Of(input string) []byte {
 	return algorithm.Sum(nil)
 }
 
-func base58Encoded(bytes []byte) string {
-	encoding := base58.BitcoinEncoding
-	encoded, err := encoding.Encode(bytes)
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
+func base64Encoded(bytes []byte) string {
+	encoded := base64.StdEncoding.EncodeToString(bytes)
 	return string(encoded)
 }
